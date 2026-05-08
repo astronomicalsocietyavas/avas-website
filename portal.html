@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AVAS Member Portal</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Segoe UI', Arial, sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+      background:radial-gradient(circle at top,#1c2458,#070914 55%,#02030a);
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      overflow:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background-image:
+        radial-gradient(#fff 1px,transparent 1px),
+        radial-gradient(#ffd369 1px,transparent 1px);
+      background-size:80px 80px,130px 130px;
+      background-position:0 0,40px 60px;
+      opacity:.25;
+      animation:stars 60s linear infinite;
+      z-index:-2;
+    }
+
+    @keyframes stars{
+      from{transform:translateY(0)}
+      to{transform:translateY(-600px)}
+    }
+
+    .planet{
+      position:fixed;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:radial-gradient(circle at 30% 30%,#fff1b8,#ff9f43 35%,#8b3dff 70%,#111936);
+      top:8%;
+      right:8%;
+      box-shadow:0 0 70px rgba(124,92,255,.65);
+      z-index:-1;
+      animation:float 5s ease-in-out infinite;
+    }
+
+    @keyframes float{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-18px)}
+    }
+
+    .portal{
+      width:92%;
+      max-width:980px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:30px;
+      overflow:hidden;
+      backdrop-filter:blur(16px);
+      box-shadow:0 30px 90px rgba(0,0,0,.45);
+    }
+
+    .info{
+      padding:50px;
+      background:linear-gradient(145deg,rgba(255,211,105,.18),rgba(124,92,255,.18));
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .info h1{
+      font-size:42px;
+      line-height:1.1;
+      margin-bottom:20px;
+    }
+
+    .info span{
+      color:#ffd369;
+    }
+
+    .info p{
+      color:#dbe2ff;
+      font-size:17px;
+      margin-bottom:25px;
+    }
+
+    .small-note{
+      padding:14px 18px;
+      border-radius:16px;
+      background:rgba(0,0,0,.25);
+      color:#ffd369;
+      font-weight:700;
+      width:max-content;
+      max-width:100%;
+    }
+
+    .form-area{
+      padding:45px;
+    }
+
+    .tabs{
+      display:flex;
+      gap:12px;
+      margin-bottom:28px;
+    }
+
+    .tabs button{
+      flex:1;
+      padding:13px;
+      border:none;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:800;
+      background:rgba(255,255,255,.12);
+      color:white;
+      transition:.3s;
+    }
+
+    .tabs button.active{
+      background:#ffd369;
+      color:#070914;
+      box-shadow:0 0 25px rgba(255,211,105,.35);
+    }
+
+    form{
+      display:none;
+      animation:fade .35s ease;
+    }
+
+    form.active{
+      display:block;
+    }
+
+    @keyframes fade{
+      from{opacity:0;transform:translateY(10px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    label{
+      display:block;
+      margin:12px 0 6px;
+      color:#dbe2ff;
+      font-weight:600;
+    }
+
+    input,select{
+      width:100%;
+      padding:13px 15px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.2);
+      background:rgba(0,0,0,.25);
+      color:white;
+      outline:none;
+    }
+
+    input::placeholder{
+      color:#9fa8d8;
+    }
+
+    .submit-btn{
+      width:100%;
+      margin-top:22px;
+      padding:14px;
+      border:none;
+      border-radius:999px;
+      background:#ffd369;
+      color:#070914;
+      font-weight:900;
+      cursor:pointer;
+      transition:.3s;
+    }
+
+    .submit-btn:hover{
+      transform:translateY(-3px);
+      box-shadow:0 12px 30px rgba(255,211,105,.3);
+    }
+
+    .message{
+      margin-top:15px;
+      text-align:center;
+      font-weight:700;
+      color:#ffd369;
+    }
+
+    .dashboard{
+      display:none;
+      text-align:center;
+      padding:45px;
+    }
+
+    .dashboard h2{
+      color:#ffd369;
+      margin-bottom:12px;
+    }
+
+    .dashboard p{
+      color:#dbe2ff;
+      margin-bottom:20px;
+    }
+
+    .logout{
+      padding:12px 26px;
+      border:none;
+      border-radius:999px;
+      background:#ff5c5c;
+      color:white;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    @media(max-width:850px){
+      .portal{
+        grid-template-columns:1fr;
+        max-height:95vh;
+        overflow-y:auto;
+      }
+
+      .info,.form-area{
+        padding:32px;
+      }
+
+      .info h1{
+        font-size:34px;
+      }
+
+      .planet{
+        width:170px;
+        height:170px;
+        opacity:.6;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="planet"></div>
+
+  <div class="portal" id="portalBox">
+
+    <div class="info">
+      <h1>ASAV <span>Member Portal</span></h1>
+      <p>
+        Register first to become a member of the Astronomical Society of Asoka Vidyalaya.
+        After registration, members can log in to access society updates and resources.
+      </p>
+      <div class="small-note">Register → Login → Member Dashboard</div>
+    </div>
+
+    <div class="form-area">
+      <div class="tabs">
+        <button class="active" onclick="showForm('register', this)">Register</button>
+        <button onclick="showForm('login', this)">Login</button>
+      </div>
+
+      <form id="registerForm" class="active">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="Enter your full name" required>
+
+        <label>Grade / Class</label>
+        <input type="text" id="regGrade" placeholder="Example: Grade 12 Bio" required>
+
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="Enter your email" required>
+
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Create password" required>
+
+        <label>Interested Area</label>
+        <select id="regInterest" required>
+          <option value="">Select your interest</option>
+          <option>Observation Astronomy</option>
+          <option>Astrophysics</option>
+          <option>Astronomy Quiz</option>
+          <option>Rocketry</option>
+          <option>General Astronomy</option>
+        </select>
+
+        <button type="submit" class="submit-btn">Create Member Account</button>
+        <div class="message" id="registerMessage"></div>
+      </form>
+
+      <form id="loginForm">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" required>
+
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+
+        <button type="submit" class="submit-btn">Login to Portal</button>
+        <div class="message" id="loginMessage"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="dashboard" id="dashboard">
+    <h2>Welcome to ASAV Member Dashboard</h2>
+    <p id="memberDetails"></p>
+    <p>You are now logged in as a registered member.</p>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    function showForm(formName, button){
+      document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      document.getElementById('registerForm').classList.remove('active');
+      document.getElementById('loginForm').classList.remove('active');
+
+      if(formName === 'register'){
+        document.getElementById('registerForm').classList.add('active');
+      }else{
+        document.getElementById('loginForm').classList.add('active');
+      }
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const member = {
+        name: document.getElementById('regName').value,
+        grade: document.getElementById('regGrade').value,
+        email: document.getElementById('regEmail').value,
+        password: document.getElementById('regPassword').value,
+        interest: document.getElementById('regInterest').value
+      };
+
+      localStorage.setItem('asavMember', JSON.stringify(member));
+      document.getElementById('registerMessage').innerText = 'Registration successful. Now login.';
+      this.reset();
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const savedMember = JSON.parse(localStorage.getItem('asavMember'));
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      if(savedMember && savedMember.email === email && savedMember.password === password){
+       localStorage.setItem("loggedIn","true");
+
+window.location.href = "index.html";
+        document.getElementById('memberDetails').innerText =
+          savedMember.name + ' | ' + savedMember.grade + ' | ' + savedMember.interest;
+      }else{
+        document.getElementById('loginMessage').innerText = 'Invalid email or password.';
+      }
+    });
+
+    function logout(){
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('portalBox').style.display = 'grid';
+      document.getElementById('loginForm').reset();
+    }
+  </script>
+
+</body>
+</html>
